@@ -1,39 +1,46 @@
-import { MeetingProvider } from "@videosdk.live/react-sdk";
-import { useEffect } from "react";
-import { useState } from "react";
-import { MeetingAppProvider } from "./MeetingAppContextDef";
-import { MeetingContainer } from "./meeting/MeetingContainer";
-import { LeaveScreen } from "./components/screens/LeaveScreen";
+import { MeetingProvider } from "@videosdk.live/react-sdk"
+import { useEffect } from "react"
+import { useState } from "react"
+import { MeetingAppProvider } from "./MeetingAppContextDef"
+import { MeetingContainer } from "./meeting/MeetingContainer"
+import { LeaveScreen } from "./components/screens/LeaveScreen"
 import { JoiningScreen } from "./components/screens/JoiningScreen"
 
 function App() {
-  const [token, setToken] = useState("");
-  const [meetingId, setMeetingId] = useState("");
-  const [participantName, setParticipantName] = useState("");
-  const [micOn, setMicOn] = useState(false);
-  const [webcamOn, setWebcamOn] = useState(false);
-  const [customAudioStream, setCustomAudioStream] = useState(null);
+  const [token, setToken] = useState("")
+  const [meetingId, setMeetingId] = useState("")
+  const [participantName, setParticipantName] = useState("")
+  const [micOn, setMicOn] = useState(false)
+  const [webcamOn, setWebcamOn] = useState(false)
+  const [customAudioStream, setCustomAudioStream] = useState(null)
   const [customVideoStream, setCustomVideoStream] = useState(null)
-  const [isMeetingStarted, setMeetingStarted] = useState(false);
-  const [isMeetingLeft, setIsMeetingLeft] = useState(false);
+  const [isMeetingStarted, setMeetingStarted] = useState(false)
+  const [isMeetingLeft, setIsMeetingLeft] = useState(false)
 
   const isMobile = window.matchMedia(
     "only screen and (max-width: 768px)"
-  ).matches;
+  ).matches
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const sharedMeetingId = params.get("meetingId")
+    if (sharedMeetingId) {
+      setMeetingId(sharedMeetingId)
+    }
+  }, [])
 
   useEffect(() => {
     if (isMobile) {
       window.onbeforeunload = () => {
-        return "Are you sure you want to exit?";
-      };
+        return "Are you sure you want to exit?"
+      }
     }
-  }, [isMobile]);
+  }, [isMobile])
 
   return (
     <>
       <MeetingAppProvider>
         {isMeetingStarted ? (
-
           <MeetingProvider
             config={{
               meetingId,
@@ -42,7 +49,7 @@ function App() {
               name: participantName ? participantName : "TestUser",
               multiStream: true,
               customCameraVideoTrack: customVideoStream,
-              customMicrophoneAudioTrack: customAudioStream
+              customMicrophoneAudioTrack: customAudioStream,
             }}
             token={token}
             reinitialiseMeetingOnConfigChange={true}
@@ -50,21 +57,19 @@ function App() {
           >
             <MeetingContainer
               onMeetingLeave={() => {
-                setToken("");
-                setMeetingId("");
-                setParticipantName("");
-                setWebcamOn(false);
-                setMicOn(false);
-                setMeetingStarted(false);
+                setToken("")
+                setMeetingId("")
+                setParticipantName("")
+                setWebcamOn(false)
+                setMicOn(false)
+                setMeetingStarted(false)
               }}
               setIsMeetingLeft={setIsMeetingLeft}
             />
           </MeetingProvider>
-
         ) : isMeetingLeft ? (
           <LeaveScreen setIsMeetingLeft={setIsMeetingLeft} />
         ) : (
-
           <JoiningScreen
             participantName={participantName}
             setParticipantName={setParticipantName}
@@ -79,7 +84,7 @@ function App() {
             customVideoStream={customVideoStream}
             setCustomVideoStream={setCustomVideoStream}
             onClickStartMeeting={() => {
-              setMeetingStarted(true);
+              setMeetingStarted(true)
             }}
             startMeeting={isMeetingStarted}
             setIsMeetingLeft={setIsMeetingLeft}
@@ -87,7 +92,7 @@ function App() {
         )}
       </MeetingAppProvider>
     </>
-  );
+  )
 }
 
-export default App;
+export default App
